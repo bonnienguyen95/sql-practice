@@ -9,7 +9,7 @@ FROM (
         RANK() OVER (PARTITION BY student_id ORDER BY grade DESC) AS grade_rank
         FROM Enrollments)
         WHERE grade_rank = 1)
-    WHERE course_rank = 1;
+WHERE course_rank = 1;
 
 
 ---1440. Evaluate Boolean Expression - https://leetcode.com/problems/evaluate-boolean-expression/
