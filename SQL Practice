@@ -1,4 +1,21 @@
---1112. Highest Grade For Each Student - https://leetcode.com/problems/highest-grade-for-each-student/
+---178. Rank Score - https://leetcode.com/problems/rank-scores/
+SELECT Score, DENSE_RANK() OVER (ORDER BY Score DESC) AS Rank
+FROM Scores;
+
+
+---574. Winning Candidate - https://leetcode.com/problems/winning-candidate/
+SELECT Name
+FROM (
+    SELECT v.CandidateID, c.Name, COUNT(*) AS total
+    FROM Vote v
+    LEFT JOIN Candidate c
+    ON c.id = v.CandidateId
+    GROUP BY v.CandidateID, c.Name
+    ORDER BY total DESC)
+WHERE ROWNUM = 1;
+
+
+---1112. Highest Grade For Each Student - https://leetcode.com/problems/highest-grade-for-each-student/
 
 SELECT student_id, course_id, grade
 FROM (
@@ -10,6 +27,13 @@ FROM (
         FROM Enrollments)
         WHERE grade_rank = 1)
 WHERE course_rank = 1;
+
+---1393. Capital Gain/Loss - https://leetcode.com/problems/capital-gainloss/
+SELECT stock_name,
+SUM(CASE WHEN operation = 'Buy' THEN (-1)*price
+ELSE price END) AS capital_gain_loss
+FROM Stocks
+GROUP BY stock_name;
 
 
 ---1440. Evaluate Boolean Expression - https://leetcode.com/problems/evaluate-boolean-expression/
@@ -24,3 +48,4 @@ LEFT JOIN Variables v1
 ON e.left_operand = v1.name
 LEFT JOIN Variables v2
 ON e.right_operand = v2.name;
+
