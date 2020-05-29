@@ -49,3 +49,84 @@ ON e.left_operand = v1.name
 LEFT JOIN Variables v2
 ON e.right_operand = v2.name;
 
+
+---1341. Movie Rating - https://leetcode.com/problems/movie-rating/
+
+SELECT name AS results
+FROM (
+    SELECT u.name, m1.user_id, COUNT(*) AS total_rating
+    FROM Movie_Rating m1
+    LEFT JOIN Users u
+    ON m1.user_id = u.user_id
+    GROUP BY u.name, m1.user_id
+    ORDER BY COUNT(*) DESC, u.name)
+WHERE ROWNUM = 1
+UNION ALL
+SELECT title AS results
+FROM (
+    SELECT m3.title, m2.movie_id, AVG(rating)
+    FROM Movie_Rating m2
+    LEFT JOIN Movies m3
+    ON m2.movie_id = m3.movie_id
+    WHERE TO_CHAR(created_at, 'YYYY-MM')='2020-02'
+    GROUP BY m3.title, m2.movie_id
+    ORDER BY AVG(rating) DESC, m3.title)
+WHERE ROWNUM = 1;
+
+---1212. Team Scores in Football Tournament - https://leetcode.com/problems/team-scores-in-football-tournament/
+SELECT c.team_id AS team_id, c.team_name, NVL(SUM(b.num_points), 0) AS num_points
+FROM (
+    SELECT host_team AS team, SUM(result) AS num_points
+    FROM (
+        SELECT match_id, host_team, guest_team,
+        CASE WHEN host_goals > guest_goals THEN 3
+        WHEN host_goals < guest_goals THEN 0
+        ELSE 1
+        END AS result
+        FROM Matches) a
+    GROUP BY host_team
+
+    UNION ALL
+
+    SELECT guest_team AS team, SUM(result) AS num_points
+    FROM (
+        SELECT match_id, host_team, guest_team,
+        CASE WHEN host_goals < guest_goals THEN 3
+        WHEN host_goals > guest_goals THEN 0
+        ELSE 1
+        END AS result
+        FROM Matches) a
+    GROUP BY guest_team) b
+FULL JOIN Teams c
+ON b.team = c.team_id
+GROUP BY c.team_id, c.team_name
+ORDER BY num_points DESC, team_id ASC;
+
+
+---1205. Monthly Transactions II - https://leetcode.com/problems/monthly-transactions-ii/
+select
+to_char(trans_date, 'YYYY-MM') as month
+, country
+, sum(case when state like 'app%' then 1 else 0 end) as approved_count
+, sum(case when state like 'app%' then amount else 0 end) as approved_amount
+, sum(chargebacks) as chargeback_count
+, sum(case when chargebacks = 1 then amount else 0 end) as chargeback_amount
+from(
+select t.*, 0 as chargebacks
+from transactions t
+union all
+select *
+from (
+select c.trans_id, t1.country, null as state, t1.amount, c.trans_date, 1 as chargebacks
+from chargebacks c
+left join transactions t1
+on t1.id = c.trans_id
+)
+)
+group by to_char(trans_date, 'YYYY-MM'), country
+having sum(case when state like 'app%' then 1 else 0 end) <> 0
+or sum(case when state like 'app%' then amount else 0 end) <> 0
+or sum(chargebacks) <> 0
+or sum(case when chargebacks = 1 then amount else 0 end) <>0
+order by to_char(trans_date, 'YYYY-MM')
+
