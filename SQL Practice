@@ -102,6 +102,15 @@ ON b.team = c.team_id
 GROUP BY c.team_id, c.team_name
 ORDER BY num_points DESC, team_id ASC;
 
+---1445. Apples & Oranges - https://leetcode.com/problems/apples-oranges/
+# Write your MySQL query statement below
+
+SELECT s1.sale_date, (s1.sold_num - s2.sold_num) AS diff
+FROM sales s1
+LEFT JOIN sales s2
+ON s1.sale_date = s2.sale_date
+WHERE s1.fruit = 'apples' AND s2.fruit = 'oranges'
+GROUP BY s1.sale_date;
 
 ---1205. Monthly Transactions II - https://leetcode.com/problems/monthly-transactions-ii/
 select
