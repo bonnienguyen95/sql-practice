@@ -73,6 +73,23 @@ FROM (
     ORDER BY AVG(rating) DESC, m3.title)
 WHERE ROWNUM = 1;
 
+---1164. Product Price at a Given Date - https://leetcode.com/problems/product-price-at-a-given-date/
+
+# Write your MySQL query statement below
+
+SELECT DISTINCT p1.product_id, COALESCE(p3.new_price, 10) AS price
+FROM products p1
+LEFT JOIN
+(SELECT p2.product_id, p2.new_price
+ FROM products p2
+ WHERE (p2.product_id, p2.change_date) IN
+        (
+        SELECT product_id, MAX(change_date) AS date
+        FROM products
+        WHERE change_date <= '2019-08-16'
+        GROUP BY product_id)) p3
+ON p1.product_id = p3.product_id;
+
 ---1212. Team Scores in Football Tournament - https://leetcode.com/problems/team-scores-in-football-tournament/
 SELECT c.team_id AS team_id, c.team_name, NVL(SUM(b.num_points), 0) AS num_points
 FROM (
